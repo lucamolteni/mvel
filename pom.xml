@@ -68,6 +68,8 @@
     </mailingLists>
     
     <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
@@ -107,8 +109,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>9</source>
+                    <target>9</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -260,6 +262,12 @@
             <scope>test</scope>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-mvel-compiler</artifactId>
+            <version>7.55.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>

@@ -18,6 +18,7 @@ public class CompoundAssignmentOperatorTest extends TestCase {
 
     private static final String HOLDER = "holder";
 
+    // TODO LUCA si può passare questa stringa a JShell? Così non dobbiamo convertire
     private Map<String, Object> createVarMap() {
         Map<String, Object> varMap = new HashMap<>();
         NumberHolder holder = new NumberHolder();

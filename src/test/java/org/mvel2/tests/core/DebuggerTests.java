@@ -293,7 +293,7 @@ public class DebuggerTests extends AbstractTest {
     MVELRuntime.setThreadDebugger(testDebugger);
 
     assertEquals(1, MVEL.executeDebugger(compiled, null, new MapVariableResolverFactory(createTestMap())));
-    assertEquals("did not break at expected lines", Make.Set.<Integer>$()._(6)._(8)._(9)._(10)._finish(), breaked);
+    assertEquals("did not break at expected lines", Make.Set.<Integer>$().underscore(6).underscore(8).underscore(9).underscore(10)._finish(), breaked);
   }
 
   public void testBreakpoints4() {
@@ -371,7 +371,7 @@ public class DebuggerTests extends AbstractTest {
     assertEquals("bar", MVEL.executeDebugger(compiled, null, new MapVariableResolverFactory(createTestMap())));
     assertTrue("did not fire before", result.firedBefore);
     assertTrue("did not fire after", result.firedAfter);
-    assertEquals("did not break at expected points", Make.Set.<Integer>$()._(3)._(4)._(5)._finish(), breaked);
+    assertEquals("did not break at expected points", Make.Set.<Integer>$().underscore(3).underscore(4).underscore(5)._finish(), breaked);
   }
 
   public void testBreakpoints5() {
