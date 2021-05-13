@@ -109,8 +109,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>10</source>
+                    <target>10</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -194,34 +194,6 @@
                 <version>2.5.1</version>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <manifestLocation>META-INF</manifestLocation>
-                    <instructions>
-                        <Bundle-SymbolicName>org.mvel2</Bundle-SymbolicName>
-                        <Bundle-Name>mvel2</Bundle-Name>
-                        <Import-Package>
-                            sun.*;resolution:=optional, *
-                        </Import-Package>
-                        <Export-Package>
-                            org.mvel2.*
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
         </plugins>
 
         <resources>

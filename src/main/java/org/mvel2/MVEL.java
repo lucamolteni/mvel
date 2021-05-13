@@ -20,21 +20,13 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.Statement;
-import org.drools.core.addon.ClassTypeResolver;
-import org.drools.core.addon.TypeResolver;
-import org.drools.mvelcompiler.CompiledBlockResult;
-import org.drools.mvelcompiler.MvelCompiler;
-import org.drools.mvelcompiler.context.MvelCompilerContext;
 import org.mvel2.compiler.CompiledAccExpression;
 import org.mvel2.compiler.CompiledExpression;
 import org.mvel2.compiler.ExecutableStatement;
 import org.mvel2.compiler.ExpressionCompiler;
+import org.mvel2.drools.Evaluator;
 import org.mvel2.integration.Interceptor;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.CachedMapVariableResolverFactory;
@@ -745,6 +737,7 @@ public class MVEL {
    * @return The cacheable compiled payload.
    */
   public static Serializable compileExpression(String expression) {
+    // Avoid compiling it as drools-mvel-compiler needs the original expression
 //    Serializable serializable = compileExpression(expression, null, null, null);
     return expression;
   }
@@ -989,97 +982,14 @@ public class MVEL {
    */
   @SuppressWarnings({"unchecked"})
   public static Object executeExpression(final Object compiledExpression, final Map vars) {
-
     CachingMapVariableResolverFactory factory = new CachingMapVariableResolverFactory(vars);
     try {
-
-      Serializable serializable = compileExpression((String)compiledExpression, null, null, null);
-      Object value = ((ExecutableStatement) serializable).getValue(null, factory);
-
-      CompiledBlockResult input = compileWithMvelCompiler(compiledExpression, vars, factory.getClass().getClassLoader());
-      Object eval1 = executeExpressionWithJshell(input.statementResults(), vars);
-
-      return eval1;
-    }catch (Exception e) {
-      throw new RuntimeException(e);
+//      return ((ExecutableStatement) compiledExpression).getValue(null, factory);
+      return new Evaluator().compileEvaluateWithDroolsMvelCompiler(compiledExpression, vars, factory.getClass().getClassLoader());
     }
     finally {
       factory.externalize();
     }
-  }
-
-
-  private static Object evalWithJShell(Map vars, String input) {
-    ExampleJShell exampleJShell = new ExampleJShell(vars);
-
-    exampleJShell.initEnvironmentVariable();
-
-    Object eval = exampleJShell.eval(input);
-    return eval;
-  }
-
-  /**
-   * Executes a compiled expression.
-   *
-   * @param compiledExpression -
-   * @param vars               -
-   * @return -
-   * @see #compileExpression(String)
-   */
-  @SuppressWarnings({"unchecked"})
-  public static Object executeExpressionWithJshell(final BlockStmt compiledExpression, final Map vars) {
-
-    CachingMapVariableResolverFactory factory = new CachingMapVariableResolverFactory(vars);
-    try {
-      ExampleJShell exampleJShell = new ExampleJShell(vars);
-
-      exampleJShell.initEnvironmentVariable();
-
-      Object result = "non-evaluated";
-      for(Statement s : compiledExpression.getStatements()) {
-        result = exampleJShell.eval(s.toString());
-      }
-
-      return result;
-    }catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    finally {
-      factory.externalize();
-    }
-  }
-
-  private static CompiledBlockResult compileWithMvelCompiler(Object compiledExpression, Map vars, ClassLoader classLoader) {
-    // mvel compiler
-
-    String expressionString = compiledExpression.toString();
-
-    Set<String> imports = new HashSet<>();
-    imports.add("java.util.List");
-    imports.add("java.util.ArrayList");
-    imports.add("java.util.HashMap");
-    imports.add("java.util.Map");
-    imports.add("java.math.BigDecimal");
-    imports.add("org.drools.Address");
-
-    TypeResolver classTypeResolver = new ClassTypeResolver(imports, classLoader);
-    MvelCompilerContext context = new MvelCompilerContext(classTypeResolver);
-
-    for(Object o : vars.entrySet()) {
-      Map.Entry entry = (Map.Entry) o;
-
-      Object value1 = entry.getValue();
-      if(value1 != null) {
-        context.addDeclaration((String) entry.getKey(), value1.getClass());
-      }
-    }
-
-    MvelCompiler mvelCompiler = new MvelCompiler(context);
-
-    String expressionStringWithBraces = String.format("{%s}", expressionString);
-    String withoutEndOfStatement = expressionStringWithBraces.replace("<<END_OF_STATEMENT>>;\n", "");
-    CompiledBlockResult compiledBlockResult = mvelCompiler.compileStatement(withoutEndOfStatement);
-    return compiledBlockResult;
   }
 
   /**
